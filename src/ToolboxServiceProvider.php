@@ -33,9 +33,23 @@ class ToolboxServiceProvider extends ServiceProvider
         );
 
         App::bind(
+            'toolbox.commands.models',
+            function () {
+                return new \Impleri\Toolbox\Commands\ModelsCommand();
+            }
+        );
+
+        App::bind(
             'toolbox.commands.routes',
             function () {
                 return new \Impleri\Toolbox\Commands\RoutesCommand();
+            }
+        );
+
+        App::bind(
+            'toolbox.commands.schema',
+            function () {
+                return new \Impleri\Toolbox\Commands\SchemaCommand();
             }
         );
 
@@ -49,7 +63,9 @@ class ToolboxServiceProvider extends ServiceProvider
         $this->commands(
             [
                 'toolbox.commands.controllers',
+                'toolbox.commands.models',
                 'toolbox.commands.routes',
+                'toolbox.commands.schema',
                 'toolbox.commands.build'
             ]
         );
@@ -58,6 +74,8 @@ class ToolboxServiceProvider extends ServiceProvider
         Event::listen('toolbox.build', function ($app) {
             $app->call('toolbox:routes');
             $app->call('toolbox:controllers');
+            $app->call('toolbox:models');
+            $app->call('toolbox:schema');
         });
     }
 
@@ -69,7 +87,9 @@ class ToolboxServiceProvider extends ServiceProvider
     {
         return [
             'toolbox.commands.controllers',
+            'toolbox.commands.models',
             'toolbox.commands.routes',
+            'toolbox.commands.schema',
             'toolbox.commands.build'
         ];
     }

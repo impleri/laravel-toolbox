@@ -42,6 +42,26 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Models Command Test
+     *
+     * Ensure ModelsCommand fires correctly.
+     */
+    public function testModelsIsCalled()
+    {
+        $this->runEvent('toolbox.models', 'ModelsCommand');
+    }
+
+    /**
+     * Schema Command Test
+     *
+     * Ensure SchemaCommand fires correctly.
+     */
+    public function testSchemaIsCalled()
+    {
+        $this->runEvent('toolbox.schema', 'SchemaCommand');
+    }
+
+    /**
      * Get Command
      *
      * Internal method to generate an Artisan command prepared with a mocked
