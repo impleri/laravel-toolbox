@@ -1,24 +1,24 @@
 <?php namespace Impleri\Toolbox\Commands;
 
-class ModelsCommand extends BaseCommand
+class ViewsCommand extends BaseCommand
 {
     /**
      * The console command name.
      * @var string
      */
-    protected $name = 'toolbox:models';
+    protected $name = 'toolbox:views';
 
     /**
      * The console command description.
      * @var string
      */
-    protected $description = 'Generate packaged model files.';
+    protected $description = 'Clone packaged views.';
 
     /**
      * Execute the console command.
      */
     public function fire()
     {
-        $this->trump('toolbox.models', 'models');
+        $this->trump('toolbox.views', 'views');
     }
 }

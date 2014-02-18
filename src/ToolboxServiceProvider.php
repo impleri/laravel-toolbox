@@ -54,6 +54,13 @@ class ToolboxServiceProvider extends ServiceProvider
         );
 
         App::bind(
+            'toolbox.commands.views',
+            function () {
+                return new \Impleri\Toolbox\Commands\ViewsCommand();
+            }
+        );
+
+        App::bind(
             'toolbox.commands.build',
             function () {
                 return new \Impleri\Toolbox\Commands\BuildCommand();
@@ -66,6 +73,7 @@ class ToolboxServiceProvider extends ServiceProvider
                 'toolbox.commands.models',
                 'toolbox.commands.routes',
                 'toolbox.commands.schema',
+                'toolbox.commands.views',
                 'toolbox.commands.build'
             ]
         );
@@ -76,6 +84,7 @@ class ToolboxServiceProvider extends ServiceProvider
             $app->call('toolbox:controllers');
             $app->call('toolbox:models');
             $app->call('toolbox:schema');
+            $app->call('toolbox:views');
         });
     }
 
@@ -90,6 +99,7 @@ class ToolboxServiceProvider extends ServiceProvider
             'toolbox.commands.models',
             'toolbox.commands.routes',
             'toolbox.commands.schema',
+            'toolbox.commands.views',
             'toolbox.commands.build'
         ];
     }

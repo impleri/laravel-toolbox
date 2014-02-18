@@ -62,6 +62,16 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Views Command Test
+     *
+     * Ensure SchemaCommand fires correctly.
+     */
+    public function testViewsIsCalled()
+    {
+        $this->runEvent('toolbox.views', 'ViewsCommand');
+    }
+
+    /**
      * Get Command
      *
      * Internal method to generate an Artisan command prepared with a mocked

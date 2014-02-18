@@ -1,9 +1,6 @@
 <?php namespace Impleri\Toolbox\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Event;
-
-class SchemaCommand extends Command
+class SchemaCommand extends BaseCommand
 {
     /**
      * The console command name.
@@ -22,24 +19,6 @@ class SchemaCommand extends Command
      */
     public function fire()
     {
-        $this->line('');
-
-        $message = 'This will generate schema for all of the packages that'
-            . ' subscribe to the `toolbox.schema` event.';
-        $this->comment($message);
-        $this->line('');
-
-        if ($this->confirm('Proceed with the rebuild? [Yes|no]')) {
-            $this->line('');
-
-            // Trigger generation of models
-            $this->info('Generating migrations...');
-            $routes = Event::fire('toolbox.schema');
-
-            // Done!
-            $this->line('');
-            $this->info('Process completed!');
-            $this->line('');
-        }
+        $this->trump('toolbox.schema', 'migration schema');
     }
 }
