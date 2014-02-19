@@ -17,7 +17,7 @@ class ToolboxServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->package('impleri/toolbox');
+        $this->package('impleri/toolbox', null, realpath(__DIR__));
     }
 
     /**
@@ -67,16 +67,7 @@ class ToolboxServiceProvider extends ServiceProvider
             }
         );
 
-        $this->commands(
-            [
-                'toolbox.commands.controllers',
-                'toolbox.commands.models',
-                'toolbox.commands.routes',
-                'toolbox.commands.schema',
-                'toolbox.commands.views',
-                'toolbox.commands.build'
-            ]
-        );
+        $this->commands($this->provides());
 
         // Subscribe our own commands to toolbox.compile
         Event::listen('toolbox.build', function ($app) {

@@ -86,11 +86,7 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
         $dialog = Mockery::mock('Symfony\Component\Console\Helper\DialogHelper[askConfirmation]');
         $dialog->shouldReceive('askConfirmation')->andReturn(true);
 
-        $helpers = new HelperSet(
-            [
-                'dialog' => $dialog
-            ]
-        );
+        $helpers = new HelperSet(['dialog' => $dialog]);
         $command->setHelperSet($helpers);
 
         return $command;
