@@ -22,11 +22,15 @@ abstract class BaseCommand extends Command
 
             // Trigger generation
             $this->info('Generating ' . $label . '...');
-            $routes = Event::fire($event);
+            $counts = Event::fire($event);
+            $total = array_sum($counts);
 
             // Done!
             $this->line('');
             $this->info('Process completed!');
+            if ($total) {
+                $this->info($total . ' ' . $label . ' saved.');
+            }
             $this->line('');
         }
     }
