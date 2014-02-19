@@ -25,9 +25,14 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
      */
     public function testRoutesIsCalled()
     {
-        File::shouldReceive('exists')->with('app/routes.bak.php')->andReturn(false);
-        File::shouldReceive('exists')->with('app/routes.php')->andReturn(false);
-        File::shouldReceive('put')->with('app/routes.php', Mockery::type('string'))->andReturn(true);
+        // Additional tests for the routes callback
+        File::shouldReceive('exists')
+            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
+            ->andReturn(false);
+        File::shouldReceive('put')
+            ->with('app/routes.php', Mockery::type('string'))
+            ->andReturn(true);
+
         $this->runEvent('toolbox.routes', 'RoutesCommand');
     }
 
