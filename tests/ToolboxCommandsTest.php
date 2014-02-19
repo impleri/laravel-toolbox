@@ -27,7 +27,7 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     {
         File::shouldReceive('exists')->with('app/routes.bak.php')->andReturn(false);
         File::shouldReceive('exists')->with('app/routes.php')->andReturn(false);
-        File::shouldReceive('put')->with('app/routes.php');
+        File::shouldReceive('put')->with('app/routes.php', Mockery::type('string'))->andReturn(true);
         $this->runEvent('toolbox.routes', 'RoutesCommand');
     }
 
@@ -118,7 +118,7 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     public function runEvent($event, $commandName)
     {
         $command = $this->getCommand($commandName);
-        Event::shouldReceive('fire')->once()->with($event);
+        Event::shouldReceive('fire')->once()->with($event)->andReturn([1]);
         $this->runCommand($command);
     }
 
