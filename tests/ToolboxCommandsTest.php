@@ -9,6 +9,16 @@ use Symfony\Component\Console\Helper\DialogHelper;
 class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * Tear Down
+     *
+     * Clean up any mocked objects we created.
+     */
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
+    /**
      * Build Command Test
      *
      * Ensure BuildCommand fires correctly.
@@ -16,24 +26,6 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     public function testBuildIsCalled()
     {
         $this->runEventWithCommand('toolbox.build', 'BuildCommand');
-    }
-
-    /**
-     * Routes Command Test
-     *
-     * Ensure RoutesCommand fires correctly.
-     */
-    public function testRoutesIsCalled()
-    {
-        // Additional tests for the routes callback
-        File::shouldReceive('exists')
-            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
-            ->andReturn(false);
-        File::shouldReceive('put')
-            ->with('app/routes.php', Mockery::type('string'))
-            ->andReturn(true);
-
-        $this->runEvent('toolbox.routes', 'RoutesCommand');
     }
 
     /**
@@ -57,6 +49,24 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Routes Command Test
+     *
+     * Ensure RoutesCommand fires correctly.
+     */
+    public function testRoutesIsCalled()
+    {
+        // Additional tests for the routes callback
+        File::shouldReceive('exists')
+            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
+            ->andReturn(false);
+        File::shouldReceive('put')
+            ->with('app/routes.php', Mockery::type('string'))
+            ->andReturn(true);
+
+        $this->runEvent('toolbox.routes', 'RoutesCommand');
+    }
+
+    /**
      * Schema Command Test
      *
      * Ensure SchemaCommand fires correctly.
@@ -74,27 +84,6 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     public function testViewsIsCalled()
     {
         $this->runEvent('toolbox.views', 'ViewsCommand');
-    }
-
-    /**
-     * Get Command
-     *
-     * Internal method to generate an Artisan command prepared with a mocked
-     * dialog.
-     * @param  string $commandName Class name of the command to instantiate
-     * @return Illuminate\Console\Command Artisan command
-     */
-    public function getCommand($commandName)
-    {
-        $commandName = 'Impleri\Toolbox\Commands\\' . $commandName;
-        $command = new $commandName;
-        $dialog = Mockery::mock('Symfony\Component\Console\Helper\DialogHelper[askConfirmation]');
-        $dialog->shouldReceive('askConfirmation')->andReturn(true);
-
-        $helpers = new HelperSet(['dialog' => $dialog]);
-        $command->setHelperSet($helpers);
-
-        return $command;
     }
 
     /**
@@ -128,6 +117,27 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Get Command
+     *
+     * Internal method to generate an Artisan command prepared with a mocked
+     * dialog.
+     * @param  string $commandName Class name of the command to instantiate
+     * @return Illuminate\Console\Command Artisan command
+     */
+    public function getCommand($commandName)
+    {
+        $commandName = 'Impleri\Toolbox\Commands\\' . $commandName;
+        $command = new $commandName;
+        $dialog = Mockery::mock('Symfony\Component\Console\Helper\DialogHelper[askConfirmation]');
+        $dialog->shouldReceive('askConfirmation')->andReturn(true);
+
+        $helpers = new HelperSet(['dialog' => $dialog]);
+        $command->setHelperSet($helpers);
+
+        return $command;
+    }
+
+    /**
      * Run Command
      *
      * Common method to execute an Artisan command.
@@ -140,15 +150,5 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
             new Symfony\Component\Console\Input\ArrayInput([]),
             new Symfony\Component\Console\Output\NullOutput
         );
-    }
-
-    /**
-     * Tear Down
-     *
-     * Clean up any mocked objects we created.
-     */
-    public function tearDown()
-    {
-        Mockery::close();
     }
 }
