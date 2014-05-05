@@ -67,6 +67,28 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Routes Command Test
+     *
+     * Ensure RoutesCommand fires correctly.
+     */
+    public function testRoutesAlternate()
+    {
+        // Additional tests for the routes callback
+        File::shouldReceive('exists')
+            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
+            ->andReturn(true);
+        File::shouldReceive('delete')
+            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'));
+        File::shouldReceive('move')
+            ->with('app/routes.php', 'app/routes.bak.php');
+        Event::shouldReceive('fire')
+            ->with('toolbox.routes')
+            ->andReturn(false);
+
+        $this->runEvent('toolbox.routes', 'RoutesCommand');
+    }
+
+    /**
      * Schema Command Test
      *
      * Ensure SchemaCommand fires correctly.
