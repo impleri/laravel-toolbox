@@ -66,9 +66,9 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
                 File::shouldReceive('put')
                     ->with('app/routes.php', Mockery::type('string'));
 
-                $command = $this->getCommand('RoutesCommand');
+                $command = $self->getCommand('RoutesCommand');
                 Event::shouldReceive('fire')->once()->with('toolbox.routes')->andReturn([]);
-                $this->runCommand($command);
+                $self->runCommand($command);
             }
         );
 
