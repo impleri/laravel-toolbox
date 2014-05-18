@@ -1,126 +1,80 @@
 <?php
 
 use \Mockery;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\File;
+use Codeception\Specify;
+use Codeception\Verify;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\DialogHelper;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
 
 class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Tear Down
-     *
-     * Clean up any mocked objects we created.
+     * Consume Codeception's Specify Trait
      */
-    public function tearDown()
-    {
-        Mockery::close();
-    }
+    use Specify;
 
     /**
-     * Build Command Test
-     *
-     * Ensure BuildCommand fires correctly.
+     * Do the Artisan commands fire?
      */
-    public function testBuildIsCalled()
+    public function testCommands()
     {
-        $this->runEventWithCommand('toolbox.build', 'BuildCommand');
-    }
+        $this->prepareSpecify();
+        $self = $this;
 
-    /**
-     * Controllers Command Test
-     *
-     * Ensure ControllersCommand fires correctly.
-     */
-    public function testControllersIsCalled()
-    {
-        $this->runEvent('toolbox.controllers', 'ControllersCommand');
-    }
+        $this->specify('Build executes', function () use ($self) {
+                $command = $self->getCommand('BuildCommand');
+                Event::shouldReceive('fire')->once()->with('toolbox.build', [$command]);
+                $self->runCommand($command);
+            }
+        );
 
-    /**
-     * Models Command Test
-     *
-     * Ensure ModelsCommand fires correctly.
-     */
-    public function testModelsIsCalled()
-    {
-        $this->runEvent('toolbox.models', 'ModelsCommand');
-    }
+        $this->specify('Controllers executes', function () use ($self) {
+                $self->runEvent('toolbox.controllers', 'ControllersCommand');
+            }
+        );
 
-    /**
-     * Routes Command Test
-     *
-     * Ensure RoutesCommand fires correctly.
-     */
-    public function testRoutesIsCalled()
-    {
-        // Additional tests for the routes callback
-        File::shouldReceive('exists')
-            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
-            ->andReturn(false);
-        File::shouldReceive('put')
-            ->with('app/routes.php', Mockery::type('string'))
-            ->andReturn(true);
+        $this->specify('Models executes', function () use ($self) {
+                $self->runEvent('toolbox.models', 'ModelsCommand');
+            }
+        );
 
-        $this->runEvent('toolbox.routes', 'RoutesCommand');
-    }
+        $this->specify('Routes executes without existing files', function () use ($self) {
+                File::shouldReceive('exists')
+                    ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
+                    ->andReturn(false);
+                File::shouldReceive('put')
+                    ->with('app/routes.php', Mockery::type('string'));
 
-    /**
-     * Routes Command Test
-     *
-     * Ensure RoutesCommand fires correctly.
-     */
-    public function testRoutesAlternate()
-    {
-        // Additional tests for the routes callback
-        File::shouldReceive('exists')
-            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
-            ->andReturn(true);
-        File::shouldReceive('delete')
-            ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'));
-        File::shouldReceive('move')
-            ->with('app/routes.php', 'app/routes.bak.php');
-        Event::shouldReceive('fire')
-            ->with('toolbox.routes')
-            ->andReturn(false);
+                $self->runEvent('toolbox.routes', 'RoutesCommand');
+            }
+        );
 
-        $this->runEvent('toolbox.routes', 'RoutesCommand');
-    }
+        $this->specify('Routes executes with existing files', function () use ($self) {
+                File::shouldReceive('exists')
+                    ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
+                    ->andReturn(true);
+                File::shouldReceive('delete')
+                    ->with('app/routes.bak.php');
+                File::shouldReceive('move')
+                    ->with('app/routes.php', 'app/routes.bak.php');
+                File::shouldReceive('put')
+                    ->with('app/routes.php', Mockery::type('string'));
 
-    /**
-     * Schema Command Test
-     *
-     * Ensure SchemaCommand fires correctly.
-     */
-    public function testSchemaIsCalled()
-    {
-        $this->runEvent('toolbox.schema', 'SchemaCommand');
-    }
+                $self->runEvent('toolbox.routes', 'RoutesCommand');
+            }
+        );
 
-    /**
-     * Views Command Test
-     *
-     * Ensure SchemaCommand fires correctly.
-     */
-    public function testViewsIsCalled()
-    {
-        $this->runEvent('toolbox.views', 'ViewsCommand');
-    }
+        $this->specify('BuildCommand executes', function () use ($self) {
+                $self->runEvent('toolbox.schema', 'SchemaCommand');
+            }
+        );
 
-    /**
-     * Run Event With Command
-     *
-     * Common method to set Event facade to listen for an event with a parameter
-     * before triggering an Artisan command.
-     * @param  string $event       Name of Event to listen for
-     * @param  string $commandName Class name of the command to instantiate
-     */
-    public function runEventWithCommand($event, $commandName)
-    {
-        $command = $this->getCommand($commandName);
-        Event::shouldReceive('fire')->once()->with($event, [$command]);
-        $this->runCommand($command);
+        $this->specify('BuildCommand executes', function () use ($self) {
+                $self->runEvent('toolbox.views', 'ViewsCommand');
+            }
+        );
     }
 
     /**
@@ -172,5 +126,16 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
             new Symfony\Component\Console\Input\ArrayInput([]),
             new Symfony\Component\Console\Output\NullOutput
         );
+    }
+
+    /**
+     * Set up for each spec
+     */
+    protected function prepareSpecify()
+    {
+        $this->cleanSpecify();
+        $this->afterSpecify(function () {
+            Mockery::close();
+        });
     }
 }
