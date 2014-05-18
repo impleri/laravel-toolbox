@@ -20,9 +20,9 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
      */
     public function testCommands()
     {
-        $this->prepareSpecify();
         $self = $this;
 
+        $this->prepareSpecify();
         $this->specify('Build executes', function () use ($self) {
                 $command = $self->getCommand('BuildCommand');
                 Event::shouldReceive('fire')->once()->with('toolbox.build', [$command]);
@@ -30,16 +30,19 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
             }
         );
 
+        $this->prepareSpecify();
         $this->specify('Controllers executes', function () use ($self) {
                 $self->runEvent('toolbox.controllers', 'ControllersCommand');
             }
         );
 
+        $this->prepareSpecify();
         $this->specify('Models executes', function () use ($self) {
                 $self->runEvent('toolbox.models', 'ModelsCommand');
             }
         );
 
+        $this->prepareSpecify();
         $this->specify('Routes executes without existing files', function () use ($self) {
                 File::shouldReceive('exists')
                     ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
@@ -51,6 +54,7 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
             }
         );
 
+        $this->prepareSpecify();
         $this->specify('Routes executes with existing files', function () use ($self) {
                 File::shouldReceive('exists')
                     ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
@@ -62,15 +66,19 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
                 File::shouldReceive('put')
                     ->with('app/routes.php', Mockery::type('string'));
 
-                $self->runEvent('toolbox.routes', 'RoutesCommand');
+                $command = $this->getCommand('RoutesCommand');
+                Event::shouldReceive('fire')->once()->with('toolbox.routes')->andReturn([]);
+                $this->runCommand($command);
             }
         );
 
+        $this->prepareSpecify();
         $this->specify('BuildCommand executes', function () use ($self) {
                 $self->runEvent('toolbox.schema', 'SchemaCommand');
             }
         );
 
+        $this->prepareSpecify();
         $this->specify('BuildCommand executes', function () use ($self) {
                 $self->runEvent('toolbox.views', 'ViewsCommand');
             }
