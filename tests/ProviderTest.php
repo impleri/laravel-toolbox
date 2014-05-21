@@ -52,8 +52,17 @@ class ProviderTest extends PHPUnit_Framework_TestCase
         $this->specify(
             'Binds to application',
             function () use ($self) {
-                App::shouldReceive('bind')->with('/^toolbox\.commands\./', Mockery::type('callable'));
-                Event::shouldReceive('listen')->with('toolbox.build', Mockery::type('callable'));
+                App::shouldReceive('bind')->with('/^toolbox\.commands\./', Mockery::on(function ($closure) {
+                    $command = $closure();
+                    verify_that('is a command', is_a($command, 'Illuminate\Console\Command'));
+                    return true;
+                }));
+                Event::shouldReceive('listen')->with('toolbox.build', Mockery::on(function ($closure) {
+                    $app = Mockery::mock('Illuminate\Console\Application[call]');
+                    $app->shouldReceive('call');
+                    $command = $closure($app);
+                    return true;
+                }));
                 $target = $self->getProvider(['commands']);
                 $target->shouldReceive('commands')->with(Mockery::type('array'));
                 $target->register();
