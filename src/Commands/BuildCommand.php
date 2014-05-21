@@ -28,7 +28,7 @@ class BuildCommand extends Command
             . 'subscribe to the `toolbox.build` event.';
         $this->comment($message);
         $this->line('');
-        $routes = Event::fire('toolbox.build', [$this]);
+        Event::fire('toolbox.build', [$this]);
 
         // Done!
         $this->line('');
