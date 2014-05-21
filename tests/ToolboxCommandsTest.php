@@ -43,18 +43,6 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
         );
 
         $this->prepareSpecify();
-        $this->specify('Routes executes without existing files', function () use ($self) {
-                File::shouldReceive('exists')
-                    ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
-                    ->andReturn(false);
-                File::shouldReceive('put')
-                    ->with('app/routes.php', Mockery::type('string'));
-
-                $self->runEvent('toolbox.routes', 'RoutesCommand');
-            }
-        );
-
-        $this->prepareSpecify();
         $this->specify('Routes executes with existing files', function () use ($self) {
                 File::shouldReceive('exists')
                     ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
@@ -69,6 +57,18 @@ class ToolboxCommandsTest extends PHPUnit_Framework_TestCase
                 $command = $self->getCommand('RoutesCommand');
                 Event::shouldReceive('fire')->once()->with('toolbox.routes')->andReturn([]);
                 $self->runCommand($command);
+            }
+        );
+
+        $this->prepareSpecify();
+        $this->specify('Routes executes without existing files', function () use ($self) {
+                File::shouldReceive('exists')
+                    ->with(Mockery::anyOf('app/routes.php', 'app/routes.bak.php'))
+                    ->andReturn(false);
+                File::shouldReceive('put')
+                    ->with('app/routes.php', Mockery::type('string'));
+
+                $self->runEvent('toolbox.routes', 'RoutesCommand');
             }
         );
 
